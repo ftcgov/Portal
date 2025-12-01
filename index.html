@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ABC Prank — United States Federal Cybersecurity Portal (Demo)</title>
+<style>
+  /* FEDERAL-LIKE CLEAN DESIGN */
+  :root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --accent:#0b5ed7; /* federal blue */
+    --muted:#6b7280;
+    --danger:#d9534f;
+    --good:#198754;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  body{margin:0;background:linear-gradient(180deg,var(--bg),#e9f0fb);color:#111;}
+  .wrap{max-width:1100px;margin:32px auto;padding:20px;}
+  header{display:flex;align-items:center;gap:16px}
+  .gov-badge{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700;}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:0;color:var(--muted);font-size:14px}
+
+  /* LOGIN CARD */
+  .card{background:var(--card);box-shadow:0 6px 18px rgba(11,78,215,0.06);border-radius:10px;padding:28px;margin-top:18px;}
+  .form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  label{font-size:13px;color:var(--muted)}
+  input[type="text"], input[type="password"], select, textarea{
+    width:100%;padding:10px;border:1px solid #dbe7ff;border-radius:6px;font-size:15px;
+  }
+  .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+  .center{text-align:center}
+
+  /* PORTAL LAYOUT */
+  .grid{display:grid;grid-template-columns: 1fr 380px;gap:18px}
+  .panel{background:var(--card);padding:16px;border-radius:10px;box-shadow:0 6px 18px rgba(15,30,60,0.04)}
+  .stat-row{display:flex;gap:12px;flex-wrap:wrap}
+  .stat{flex:1;padding:12px;border-radius:8px;background:#f7fbff;border:1px solid #e8f0ff}
+  .stat h3{margin:0;font-size:18px}
+  .small{font-size:12px;color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:8px;border-bottom:1px solid #eef4ff;text-align:left;font-size:14px}
+  th{color:var(--muted);font-weight:600}
+  .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:#eef6ff;color:var(--accent);font-weight:600;font-size:12px}
+  .hacker-row{cursor:pointer}
+  .top-corner{position:fixed;top:18px;right:18px;background:#072e6b;color:#fff;padding:8px 12px;border-radius:8px;z-index:9999;display:none}
+  .top-corner button{background:transparent;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer;margin-left:8px}
+  .muted-note{color:var(--muted);font-size:13px;margin-top:6px}
+
+  /* modal */
+  .modal-back{position:fixed;inset:0;background:rgba(10,20,40,0.45);display:none;align-items:center;justify-content:center;z-index:9998}
+  .modal{background:#fff;padding:18px;border-radius:10px;max-width:640px;width:94%}
+  .row{display:flex;gap:12px}
+  .row .col{flex:1}
+
+  footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+  .flag{font-size:12px;margin-left:6px;color:var(--muted)}
+  @media(max-width:900px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="gov-badge">U.S. FEDERAL</div>
+    <div>
+      <h1>ABC Prank — United States Federal Cybersecurity Portal (DEMO)</h1>
+      <p class="lead">Official-style mock portal — Demo only. Designed in US federal English format.</p>
+    </div>
+  </header>
+
+  <!-- LOGIN CARD -->
+  <div id="loginCard" class="card">
+    <h2 style="margin-top:0">Login</h2>
+    <p class="muted-note">Enter the credentials to open the portal (demo credential preset).</p>
+
+    <div class="form-row">
+      <div style="flex:1">
+        <label>Username</label>
+        <input id="username" type="text" placeholder="username" value="">
+      </div>
+      <div style="width:200px">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="password" value="">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center">
+      <button id="loginBtn" class="btn">Sign In</button>
+      <button id="demoFill" class="btn ghost">Auto-fill demo creds</button>
+      <div style="flex:1"></div>
+      <div class="small">Note: username <strong>ektapagal</strong> password <strong>989678</strong></div>
+    </div>
+  </div>
+
+  <!-- PORTAL (hidden initially) -->
+  <div id="portal" style="display:none;margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px">
+      <div>
+        <h2 style="margin:0">PORTAL — Customer Dashboard</h2>
+        <div class="small">Customer: <strong id="customerNameDisplay">—</strong> | Portal ID: <span class="chip" id="portalId">ABC-PRK-001</span></div>
+      </div>
+      <div>
+        <button id="logoutBtn" class="btn ghost">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <div class="stat-row">
+            <div class="stat"><h3 id="hackersLeft">Hackers left: 164</h3><div class="small">Active threat count</div></div>
+            <div class="stat"><h3 id="securityLevel">Security level: 42%</h3><div class="small">Current system posture</div></div>
+            <div class="stat"><h3 id="virusCount">Viruses: 59</h3><div class="small">Total flagged</div></div>
+          </div>
+
+          <h3 style="margin-top:14px">Removed Viruses</h3>
+          <div id="removedList" class="muted-note">Loading removed virus list...</div>
+
+          <h3 style="margin-top:14px">Hackers who removed threats</h3>
+          <table>
+            <thead><tr><th>Name</th><th>Country</th><th>Removed</th></tr></thead>
+            <tbody id="hackersTable"></tbody>
+          </table>
+
+          <h3 style="margin-top:14px">Financial Security</h3>
+          <div class="panel" style="background:#fff9f9;border:1px solid #ffecec">
+            <strong>Status:</strong> <span id="financialStatus">Not started</span>
+            <div class="muted-note">This column shows finance-related security actions. (Demo)</div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="panel">
+          <h3>Agents & Tools</h3>
+          <div class="muted-note">Click a hacker row to reveal Tech Help code.</div>
+          <div style="margin-top:12px">
+            <label>Customer Name (editable)</label>
+            <input id="customerName" type="text" />
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button id="saveCustomer" class="btn">Save Customer</button>
+              <button id="openEditor" class="btn ghost">Open Tech Editor</button>
+            </div>
+          </div>
+
+          <h4 style="margin-top:18px">Quick Actions</h4>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="resetDemo" class="btn ghost">Reset Demo Data</button>
+          </div>
+        </div>
+
+        <div style="height:18px"></div>
+
+        <div class="panel">
+          <h4>Portal Info</h4>
+          <div class="small">Last saved: <span id="lastSaved">—</span></div>
+          <div class="small">Data source: <span id="dataSource">localStorage</span></div>
+          <div style="margin-top:8px" class="muted-note">To sync across devices, paste Firebase config in the code (see comments).</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    <div>All rights reserved — ABC Prank Demo. This is a mock portal for demonstration only.</div>
+  </footer>
+</div>
+
+<!-- TOP CORNER TECH CODE -->
+<div id="topCorner" class="top-corner">
+  Tech Help Code: <strong id="techCodeDisplay">—</strong>
+  <button id="openTechEditor" title="Edit portal data">Edit</button>
+</div>
+
+<!-- MODAL EDITOR -->
+<div id="modalBack" class="modal-back">
+  <div class="modal">
+    <h3>Tech Editor — Modify Threat & Security Data</h3>
+    <div style="margin-top:10px" class="row">
+      <div class="col">
+        <label>Hackers left (number)</label>
+        <input id="editHackersLeft" type="number" />
+      </div>
+      <div class="col">
+        <label>Security level (%)</label>
+        <input id="editSecurityLevel" type="number" min="0" max="100" />
+      </div>
+      <div class="col">
+        <label>Virus count (number)</label>
+        <input id="editVirusCount" type="number" />
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Removed virus names (comma separated)</label>
+      <textarea id="editRemoved" rows="3"></textarea>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Hackers list (one per line in format: Name | Country | RemovedCount)</label>
+      <textarea id="editHackersList" rows="6" placeholder="ex: Alice|United States|3"></textarea>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+      <button id="saveEdits" class="btn">Save</button>
+      <button id="cancelEdits" class="btn ghost">Cancel</button>
+    </div>
+    <div class="muted-note" style="margin-top:8px">Saving here will update the portal data. Use responsibly — demo only.</div>
+  </div>
+</div>
+
+<script>
+/*
+  Demo portal script.
+  - Default: uses localStorage to store object under key 'abc_prank_portal_data'
+  - Optional: if you paste your Firebase config in the firebaseConfig variable below and include Firebase libs,
+    the code will try to use Firebase Realtime Database under /abc-prank-data for cross-device sync.
+  NOTE: For simplicity I didn't include Firebase SDK script tags here. To enable, add Firebase scripts and config.
+*/
+
+/* ====== OPTIONAL: Add your Firebase config here to enable cross-device sync.
+   Example:
+   const firebaseConfig = {
+     apiKey: "XXX",
+     authDomain: "XXX",
+     databaseURL: "https://your-db.firebaseio.com",
+     projectId: "xxx",
+     storageBucket: "xxx",
+     messagingSenderId: "xxx",
+     appId: "xxx"
+   };
+   Then include Firebase SDK <script> tags for firebase-app and firebase-database in the HTML head.
+*/
+const firebaseConfig = null; // set to your config object to enable (or leave null to use localStorage)
+
+const STORAGE_KEY = 'abc_prank_portal_data_v1';
+let data = null;
+let currentTechCode = null;
+
+/* ===== Default demo data ===== */
+const defaultData = {
+  customerName: 'John Doe',
+  hackersLeft: 164,
+  securityLevel: 42,
+  virusCount: 59,
+  removedViruses: ['WormX-7','Trojan.SpyA','Adware.Z99','Backdoor-7A','FakeAV-2','Keylogger.B','Cleaner-Delta'],
+  hackers: [
+    {name:'Alice Walker', country:'United States', removed:7},
+    {name:'Chen Wei', country:'China', removed:5},
+    {name:'Ivan Petrov', country:'Russia', removed:4},
+    {name:'Carlos M.', country:'Mexico', removed:3},
+    {name:'Nina K.', country:'Germany', removed:2}
+  ],
+  financialSecurity: 'Not started',
+  lastSaved: (new Date()).toISOString()
+};
+
+/* Utility: save/load */
+function loadData(){
+  if(firebaseConfig){
+    // Placeholder: If Firebase enabled, you'd read from server.
+    // For demo we fallback to localStorage unless you wire Firebase in.
+    document.getElementById('dataSource').innerText = 'Firebase (not wired)';
+  } else {
+    document.getElementById('dataSource').innerText = 'localStorage';
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      try{ data = JSON.parse(raw); }catch(e){ data = null; }
+    }
+    if(!data) data = JSON.parse(JSON.stringify(defaultData));
+  }
+}
+function saveData(){
+  data.lastSaved = (new Date()).toISOString();
+  if(firebaseConfig){
+    // Placeholder: Would push to Firebase
+    document.getElementById('dataSource').innerText = 'Firebase (not wired)';
+  } else {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    document.getElementById('lastSaved').innerText = new Date(data.lastSaved).toLocaleString('en-US');
+  }
+}
+
+/* Render UI */
+function renderPortal(){
+  document.getElementById('customerNameDisplay').innerText = data.customerName;
+  document.getElementById('customerName').value = data.customerName;
+  document.getElementById('hackersLeft').innerText = 'Hackers left: ' + data.hackersLeft;
+  document.getElementById('securityLevel').innerText = 'Security level: ' + data.securityLevel + '%';
+  document.getElementById('virusCount').innerText = 'Viruses: ' + data.virusCount;
+  document.getElementById('financialStatus').innerText = data.financialSecurity || 'Not started';
+
+  // removed viruses
+  const removedEl = document.getElementById('removedList');
+  if(data.removedViruses && data.removedViruses.length){
+    removedEl.innerHTML = data.removedViruses.map((v,i)=>'<div><strong>'+(i+1)+'.</strong> '+escapeHtml(v)+'</div>').join('');
+  } else {
+    removedEl.innerText = 'No removed viruses recorded.';
+  }
+
+  // hackers table
+  const tbody = document.getElementById('hackersTable');
+  tbody.innerHTML = '';
+  data.hackers.forEach((h, idx)=>{
+    const tr = document.createElement('tr');
+    tr.className = 'hacker-row';
+    tr.dataset.idx = idx;
+    tr.innerHTML = `<td>${escapeHtml(h.name)}</td><td>${escapeHtml(h.country)} <span class="flag">(${countryFlag(h.country)})</span></td><td>${h.removed}</td>`;
+    tr.addEventListener('click', ()=>onHackerClick(idx));
+    tbody.appendChild(tr);
+  });
+
+  // tech code display hidden until hacker clicked
+  document.getElementById('topCorner').style.display = 'none';
+}
+
+/* Hacker click -> show tech code on top corner */
+function onHackerClick(idx){
+  const h = data.hackers[idx];
+  // generate a simple tech code based on name + timestamp (demo)
+  currentTechCode = 'TH-' + btoa((h.name+'|'+Date.now()).slice(0,40)).replace(/=/g,'').slice(0,10).toUpperCase();
+  document.getElementById('techCodeDisplay').innerText = currentTechCode;
+  document.getElementById('topCorner').style.display = 'inline-block';
+}
+
+/* Editor modal */
+function openEditor(){
+  // populate fields
+  document.getElementById('editHackersLeft').value = data.hackersLeft;
+  document.getElementById('editSecurityLevel').value = data.securityLevel;
+  document.getElementById('editVirusCount').value = data.virusCount;
+  document.getElementById('editRemoved').value = (data.removedViruses || []).join(', ');
+  document.getElementById('editHackersList').value = (data.hackers || []).map(x=>`${x.name}|${x.country}|${x.removed}`).join('\n');
+  document.getElementById('modalBack').style.display = 'flex';
+}
+
+function closeEditor(){ document.getElementById('modalBack').style.display = 'none'; }
+
+function saveEditor(){
+  const hLeft = parseInt(document.getElementById('editHackersLeft').value||0,10);
+  const sec = parseInt(document.getElementById('editSecurityLevel').value||0,10);
+  const viruses = parseInt(document.getElementById('editVirusCount').value||0,10);
+  const removedRaw = document.getElementById('editRemoved').value || '';
+  const removedArr = removedRaw.split(',').map(s=>s.trim()).filter(s=>s);
+  const hackersRaw = document.getElementById('editHackersList').value || '';
+  const hackersArr = hackersRaw.split('\n').map(line=>{
+    const parts = line.split('|').map(p=>p.trim());
+    return {name: parts[0]||'Unknown', country: parts[1]||'Unknown', removed: parseInt(parts[2]||0,10)};
+  }).filter(h=>h.name);
+
+  data.hackersLeft = isFinite(hLeft) ? hLeft : data.hackersLeft;
+  data.securityLevel = isFinite(sec) ? sec : data.securityLevel;
+  data.virusCount = isFinite(viruses) ? viruses : data.virusCount;
+  data.removedViruses = removedArr;
+  data.hackers = hackersArr;
+  saveData();
+  renderPortal();
+  closeEditor();
+  alert('Tech edits saved.');
+}
+
+/* LOGIN logic */
+document.getElementById('demoFill').addEventListener('click', ()=>{
+  document.getElementById('username').value = 'ektapagal';
+  document.getElementById('password').value = '989678';
+});
+document.getElementById('loginBtn').addEventListener('click', ()=>{
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  if(u === 'ektapagal' && p === '989678'){
+    // login success
+    loadData();
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('portal').style.display = 'block';
+    renderPortal();
+  } else {
+    alert('Invalid credentials (demo).');
+  }
+});
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  document.getElementById('portal').style.display = 'none';
+  document.getElementById('loginCard').style.display = 'block';
+});
+
+/* Editor open/save handlers */
+document.getElementById('openEditor').addEventListener('click', openEditor);
+document.getElementById('openTechEditor').addEventListener('click', openEditor);
+document.getElementById('cancelEdits').addEventListener('click', closeEditor);
+document.getElementById('saveEdits').addEventListener('click', saveEditor);
+
+/* Save customer name */
+document.getElementById('saveCustomer').addEventListener('click', ()=>{
+  const v = document.getElementById('customerName').value.trim() || 'Unnamed';
+  data.customerName = v;
+  saveData();
+  renderPortal();
+  alert('Customer name saved.');
+});
+
+/* Reset demo */
+document.getElementById('resetDemo').addEventListener('click', ()=>{
+  if(confirm('Reset demo data to defaults?')){
+    data = JSON.parse(JSON.stringify(defaultData));
+    saveData();
+    renderPortal();
+  }
+});
+
+/* topCorner edit button (same as open editor) */
+document.getElementById('openTechEditor').addEventListener('click', openEditor);
+
+/* helpers */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+function countryFlag(country){
+  // small mapping for demo
+  const map = {
+    'United States':'US', 'China':'CN', 'Russia':'RU', 'Mexico':'MX', 'Germany':'DE', 'India':'IN'
+  };
+  return map[country] || '';
+}
+
+/* initial load */
+loadData();
+
+/* show local saved time if portal not yet opened */
+if(data && data.lastSaved){
+  document.getElementById('lastSaved').innerText = new Date(data.lastSaved).toLocaleString('en-US');
+}
+</script>
+</body>
+</html>
